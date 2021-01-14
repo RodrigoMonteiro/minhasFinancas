@@ -1,8 +1,12 @@
 package com.rodrigo.minhasfinancas.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.rodrigo.minhasfinancas.exceptions.ErroDeAutenticacaoException;
 import com.rodrigo.minhasfinancas.exceptions.RegraNegocioException;
 import com.rodrigo.minhasfinancas.model.Usuario;
 import com.rodrigo.minhasfinancas.repository.UsuarioRepository;
@@ -19,14 +23,25 @@ public class UsuarioServiceImplementacao implements UsuarioService {
 
 	@Override
 	public Usuario autenticar(String email, String senha) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+
+		if (!usuario.isPresent()) {
+			throw new ErroDeAutenticacaoException("Usuário não encontrado para o e-mail informado!");
+		}
+		
+		if(!usuario.get().getSenha().equals(senha)) {
+			throw new ErroDeAutenticacaoException("Senha inválida!");
+		}
+
+		return usuario.get();
 	}
 
+// O transactional vai criar uma transação  vai executar e vai commitar
 	@Override
+	@Transactional
 	public Usuario salvarUsuario(Usuario usuario) {
-		// TODO Auto-generated method stub
-		return null;
+		validarEmail(usuario.getEmail());
+		return usuarioRepository.save(usuario);
 	}
 
 	@Override
