@@ -94,4 +94,18 @@ public class UsuarioRepositoryTest {
 		Optional<Usuario> resultado = usuarioRepository.findByEmail("usuario@email.com");
 		Assertions.assertThat(resultado.isPresent()).isFalse();
 	}
+
+	@Test
+	public void devePersistirUmUsuarioNaBaseDeDados() {
+
+		// Cenario
+		Usuario usuario = criarUsuario();
+
+		// Ação
+		Usuario usuarioSalvo = usuarioRepository.save(usuario);
+
+		// Verficação
+		Assertions.assertThat(usuarioSalvo.getId()).isNotNull();
+	}
+
 }
